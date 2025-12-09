@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pedido de Peças | Quallit</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      min-height: 100vh;
+      background: #f4f6f9;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      padding: 18px;
+    }
+    main {
+      width: min(1100px, 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    .header {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1e1e2f;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .pieces-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .piece {
+      background: #fff;
+      border-radius: 10px;
+      padding: 12px;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .piece-title {
+      font-weight: 600;
+      color: #1e1e2f;
+    }
+    .piece-code {
+      font-size: 13px;
+      color: #4b5563;
+    }
+    .piece-desc {
+      font-size: 13px;
+      color: #6b7280;
+    }
+    .qty-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    label {
+      font-size: 14px;
+      color: #374151;
+    }
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+    input[type="number"] {
+      width: 90px;
+    }
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #1e1e2f;
+      box-shadow: 0 0 0 3px rgba(30, 30, 47, 0.12);
+    }
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+    button.primary {
+      background: #1e1e2f;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.2s ease, background 0.2s ease;
+      width: fit-content;
+    }
+    button.primary:hover {
+      background: #2f2f44;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    }
+    button.primary:active {
+      transform: translateY(1px);
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .preview {
+      width: 100%;
+      min-height: 180px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      padding: 12px;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 14px;
+      color: #111827;
+      resize: vertical;
+    }
+    .send-btn {
+      background: #10b981;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease, box-shadow 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .send-btn:hover {
+      background: #0ea271;
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+    }
+    .send-btn.secondary {
+      background: #2563eb;
+    }
+    .send-btn.secondary:hover {
+      background: #1d4ed8;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+    }
+    .info {
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 6px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    @media (max-width: 640px) {
+      body {
+        padding: 12px;
+      }
+      .qty-row {
+        flex-wrap: wrap;
+      }
+      input[type="number"] {
+        width: 100%;
+      }
+      button.primary {
+        width: 100%;
+        justify-content: center;
+      }
+      .actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .send-btn {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="card">
+      <div class="header">🛒 Pedido de Peças</div>
+      <p class="info">Selecione quantidades, defina a prioridade e adicione observações.</p>
+
+      <div class="form-grid">
+        <div>
+          <label for="cdSelect">CD / Estoque</label>
+          <select id="cdSelect">
+            <option value="">Selecione...</option>
+            <option value="CD SP - SANTOS">CD SP - SANTOS</option>
+            <option value="CD MS - Mario Junior">CD MS - Mario Junior</option>
+            <option value="CD GO - Maycon">CD GO - Maycon</option>
+            <option value="CD RJ - Rayone">CD RJ - Rayone</option>
+            <option value="CD VOLANTE - MARCO">CD VOLANTE - MARCO</option>
+            <option value="CD MG - GUSTAVO">CD MG - GUSTAVO</option>
+            <option value="CD PR - LONDRINA">CD PR - LONDRINA</option>
+            <option value="CD PR - CURITIBA - Erick">CD PR - CURITIBA - Erick</option>
+            <option value="CD MT - Henrique">CD MT - Henrique</option>
+            <option value="CD ES - Ezequiel">CD ES - Ezequiel</option>
+            <option value="CD RS - Leandro">CD RS - Leandro</option>
+            <option value="CD BA - Alliance IT">CD BA - Alliance IT</option>
+            <option value="CD PE - Rildo">CD PE - Rildo</option>
+            <option value="CD DF - Fabio">CD DF - Fabio</option>
+            <option value="CD VOLANTE - Eduardo Oliveira REGIONAL">CD VOLANTE - Eduardo Oliveira REGIONAL</option>
+            <option value="CD SP - Milton">CD SP - Milton</option>
+            <option value="CD VOLANTE - Renato">CD VOLANTE - Renato</option>
+            <option value="CD SE - José Carlos">CD SE - José Carlos</option>
+            <option value="CD VOLANTE - BR TEC. RIBEIRÃO PRETO/SP">CD VOLANTE - BR TEC. RIBEIRÃO PRETO/SP</option>
+            <option value="OUTRO">Outro (informar nome e região)</option>
+          </select>
+        </div>
+        <div id="outroFields" style="display:none;">
+          <label for="outroNome">Nome e região (se selecionou outro)</label>
+          <input type="text" id="outroNome" placeholder="Ex: João - Região ABC" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="prioridade">Prioridade</label>
+          <select id="prioridade">
+            <option value="Normal">Normal</option>
+            <option value="Urgente">Urgente</option>
+            <option value="Baixa">Baixa</option>
+          </select>
+        </div>
+        <div>
+          <label for="observacoes">Observações</label>
+          <textarea id="observacoes" placeholder="Ex: Pedido para o chamado INC12345"></textarea>
+        </div>
+      </div>
+
+      <div class="pieces-grid" id="piecesContainer"></div>
+      <button class="primary" id="generateBtn">Gerar pedido</button>
+    </section>
+
+    <section class="card">
+      <div class="header">📝 Mensagem gerada</div>
+      <textarea id="output" class="preview" readonly placeholder="Clique em &quot;Gerar pedido&quot; para visualizar aqui."></textarea>
+      <div class="actions" id="sendActions" style="display:none;">
+        <a id="whatsBtn" class="send-btn" target="_blank" rel="noopener">📱 Enviar WhatsApp</a>
+        <a id="mailBtn" class="send-btn secondary" target="_blank" rel="noopener">✉️ Enviar E-mail</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Lista de peças carregada da planilha fornecida (código gerado sequencialmente para cada item)
+    const pecas = [
+      "ATENDOMETRO GERTEC 004.0832.5 ESTOQUE RD (PESQUISA RÁPIDA)",
+      "BASE LEITOR MS9540",
+      "BATERIA BIOS CR2032",
+      "BATERIA TABLET T115",
+      "BATERIA TABLET T280",
+      "BATERIA TABLET T295",
+      "BOTÃO POWER CPU",
+      "CABEÇA DE IMPRESSÃO EPSON L90",
+      "CABEÇA DE IMPRESSÃO EPSON T88V",
+      "CABO DE ENERGIA",
+      "CABO DE REDE - PATCH CORD",
+      "CABO GAVETA HORIZONTAL",
+      "CABO IMPRESSORA (USB)",
+      "CABO SATA/HD",
+      "CABO SERIAL LEITOR FIXO DATALOGIC MAGELLAN 3200VSI IMAGER 2D QR CODE",
+      "CABO USB LEITOR FIXO DATALOGIC MAGELLAN 3200VSI IMAGER 2D QR CODE",
+      "CABO USB P/ MICRO USB V8 P/TABLET ESTOQUE RD",
+      "CABO USB PARA LEITOR DE MESA DATALOGIC 3200VSI",
+      "CABO VGA",
+      "CONECTOR RJ12",
+      "CONECTOR RJ45",
+      "COOLER 1155",
+      "COOLER 775",
+      "COOLER DELL OPTIPLEX",
+      "FONTE 12V 1500MA (1,5A)",
+      "FONTE 19.5V, 3.34A, 65W - PLUG 4.5X3.0MM / 127-220V CPU DELL",
+      "FONTE ALIMENTAÇÃO LEITOR MS9540",
+      "FONTE ALIMENTAÇÃO MINI ATX",
+      "FONTE ALIMENTAÇÃO SLIM ATX 300W SS-300TFX",
+      "FONTE ATENDOMETRO 5V 1,5A",
+      "FONTE CONSULTA PREÇO OKI 5V/3A",
+      "FONTE CONSULTA PREÇO TABLET BLUEBIRD CK100 9V/3A",
+      "FONTE EPSON T88 E L90",
+      "FONTE EXTERNA NT2030",
+      "FONTE INTERNA CONVERSORA SWEDA SP030 12V",
+      "FONTE LEITOR FIXO DATALOGIC MAGELLAN 3200VSI IMAGER 2D QR CODE",
+      "FONTE MONITOR 12V - 2.0A - INPUT 100~240V - 50/60 Hz",
+      "FONTE MONITOR LG E2050T",
+      "FONTE MONITOR LG W1943CV - 19 POLEGADAS",
+      "FRONTAL LENOVO M70e",
+      "FRONTAL OKI",
+      "FRONTAL OKI/ITAUTEC 4256, 4280 USB",
+      "FRONTAL PLÁSTICO NT2030",
+      "FRONTAL ST4254 ST4253",
+      "GAVETA ABERTURA HORIZONTAL PDV",
+      "GUILHOTINA EPSON L90",
+      "GUILHOTINA EPSON T88V",
+      "HD GARANTIA DELL",
+      "HDD 2,5 Notebook",
+      "HDD 3,5 POL 500GB",
+      "IMPPRE. EPSON TM-T88V (OFERTAS/FISCAL)",
+      "IMPRE. EPSON TM-L90 (ETI. CONTROLADOS)",
+      "IMPRESSORA EPSON TM-T900F (FISCAL)",
+      "KEYSTONE",
+      "KIT CJ MECANISMO DIREITO (GAVETA DE AÇO 4260)",
+      "KIT CJ MECANISMO ESQUERDO (GAVETA DE AÇO 4260)",
+      "KIT CJ PORTA NOTAS GAVETA HORIZONTAL",
+      "LEITOR DE CÓDIGO DE BARRAS 2D HONEYWELL VOYAGER 1450G",
+      "LEITOR DE CÓDIGO DE BARRAS 2D HONEYWELL VOYAGER 1470G",
+      "LEITOR DE CÓDIGO DE BARRAS DATALOGIC QD2430",
+      "LEITOR DE CÓDIGO DE BARRAS FIXO DATALOGIC MAGELLAN 3200VSI IMAGER 2D QR CODE - USB",
+      "LEITOR DE CÓDIGO DE BARRAS LASER VOYAGER MS9540 HONEYWELL",
+      "MECANISMO COMPLETO GAVETA",
+      "MEMÓRIA DDR2 2GB 800MHZ",
+      "MEMÓRIA DDR3 2GB 1333 MHZ",
+      "MEMÓRIA DDR3 2GB PC3 10600U",
+      "MEMÓRIA DDR3 2GB PC3 12800U",
+      "MEMORIA DDR3 2GB SODIMM / NOTEBOOK",
+      "MEMÓRIA DDR3 4GB 1333 MHZ",
+      "MEMÓRIA DDR3 4GB ESTOQUE RD",
+      "MEMORIA DDR3 4GB SODIMM / NOTEBOOK",
+      "MEMÓRIA DDR3 8GB",
+      "MEMÓRIA DDR4 4GB PC4-17000 2133MHZ (PC DELL MINI)",
+      "MIOLO DE CHAVE",
+      "Mola da trava gaveta",
+      "MOLA DO ATUADOR TERMICO - EPSON TM-T88",
+      "MONITOR 15 POL",
+      "MONITOR 16 POL",
+      "MONITOR 17 POL",
+      "MONITOR 19 POL",
+      "MONITOR 20 POL",
+      "PÉ GAVETA HORIZONTAL (3260)",
+      "PLACA DE COMUNICAÇÃO EPSON T88V",
+      "PLACA DE REDE",
+      "PLACA FONTE (CONVERSOR 19V P/ ATX) OKI NT 2030/2050",
+      "PLACA MÃE DELL - OPTIPLEX D8-MFF-8F REV. 00",
+      "PLACA MÃE DELL - OPTIPLEX IPCFL",
+      "PLACA MÃE GA-945GZM-S2 775",
+      "PLACA MÃE IBM 4810",
+      "PLACA MÃE IG41M",
+      "PLACA MÃE INFOWAY 4160 LGA1150 DDR3",
+      "PLACA MÃE IPM31 (4253)",
+      "PLACA MÃE IPM41D3 (4254)",
+      "PLACA MÃE IPMH61R2",
+      "PLACA MÃE J1800",
+      "PLACA MÃE LENOVO IH61M",
+      "PLACA MÃE LENOVO IH81M",
+      "PLACA MÃE LENOVO IS8XM",
+      "PLACA MÃE NT2030",
+      "PLACA MÃE POSITIVO PIB150DR",
+      "PLACA MÃE ST4280",
+      "PLACA PRINCIPAL IMPRESSORA EPSON L90",
+      "PLACA PRINCIPAL IMPRESSORA EPSON T88",
+      "PLACA RJ12 EPSON T88V",
+      "Processador CORE 2 DUO",
+      "PROCESSADOR I3",
+      "PROCESSADOR I3 6100T",
+      "PROCESSADOR I5 6500",
+      "PROCESSADOR PENTIUM DUAL CORE",
+      "ROLAMENTO GAVETA GERBO 3260",
+      "SCANNER DE MESA - EPSON PERFECTION V19 - MODEL: J371A - 4800 DPI",
+      "SSD 120GB",
+      "SSD 240GB",
+      "SSD 480GB",
+      "SUPORTE HD NT2030",
+      "TECLA DUPLA TECLADO OPERADOR TEC65",
+      "TECLA SIMPLES TECLADO OPERADOR TEC65",
+      "TECLADO GERTEC TEC 55 C/DISP USB DROGASIL ESTOQUE RD",
+      "TECLADO GERTEC TEC 65 FIRMW P2K",
+      "TECLADO GERTEC TEC 65 FIRMW STOREX",
+      "TECLADO GERTEC TEC 65 FIRMW STOREX - USB PRETO",
+      "TECLADO GERTEC TEC 65 PRETO RD - RAIA",
+      "TECLADO GERTEC TEC 65 RD - RAIA",
+      "TECLADO NORMAL USB",
+      "TRINCO DE GAVETA (PLASTICO)",
+      "USB FRONTAL (CONECTORES)",
+      "VGA DELL 3050",
+      "VGA DELL 3060"
+    ].map((nome, idx) => ({
+      nome,
+      codigo: `P${String(idx + 1).padStart(3, "0")}`,
+      descricao: nome
+    }));
+
+    const container = document.getElementById("piecesContainer");
+    const generateBtn = document.getElementById("generateBtn");
+    const output = document.getElementById("output");
+    const sendActions = document.getElementById("sendActions");
+    const whatsBtn = document.getElementById("whatsBtn");
+    const mailBtn = document.getElementById("mailBtn");
+    const prioridadeEl = document.getElementById("prioridade");
+    const obsEl = document.getElementById("observacoes");
+    const cdSelect = document.getElementById("cdSelect");
+    const outroFields = document.getElementById("outroFields");
+    const outroNome = document.getElementById("outroNome");
+
+    function renderPecas() {
+      container.innerHTML = "";
+      pecas.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.className = "piece";
+        card.innerHTML = `
+          <div class="piece-title">${item.nome}</div>
+          <div class="piece-code">Código: ${item.codigo}</div>
+          <div class="piece-desc">${item.descricao}</div>
+          <div class="qty-row">
+            <label for="qtd-${index}">Qtd:</label>
+            <input type="number" id="qtd-${index}" min="0" step="1" inputmode="numeric" placeholder="0" />
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    cdSelect.addEventListener("change", () => {
+      const outro = cdSelect.value === "OUTRO";
+      outroFields.style.display = outro ? "block" : "none";
+      if (!outro) outroNome.value = "";
+    });
+
+    function cleanName(nome) {
+      // remove último trecho entre parênteses para evitar códigos/observações
+      return nome.replace(/\s*\([^)]*\)\s*$/, "").trim() || nome.trim();
+    }
+
+    function buildMessage() {
+      const cd = cdSelect.value;
+      const outroTexto = outroNome.value.trim();
+      if (!cd) {
+        alert("Selecione de qual CD/Estoque está solicitando.");
+        return "";
+      }
+      if (cd === "OUTRO" && !outroTexto) {
+        alert("Informe nome e região ao escolher 'Outro'.");
+        return "";
+      }
+
+      const linhas = ["PEDIDO DE PEÇAS"];
+      const prioridade = prioridadeEl.value || "Normal";
+      linhas.push(`Prioridade: ${prioridade}`);
+      if (cd === "OUTRO") {
+        linhas.push(`CD/Estoque: Outro - ${outroTexto}`);
+      } else {
+        linhas.push(`CD/Estoque: ${cd}`);
+      }
+
+      pecas.forEach((item, index) => {
+        const input = document.getElementById(`qtd-${index}`);
+        const qtd = Number(input.value) || 0;
+        if (qtd > 0) {
+          const nomeLimpo = cleanName(item.nome);
+          linhas.push(`• ${qtd}x ${nomeLimpo}`);
+        }
+      });
+
+      const obs = obsEl.value.trim();
+      if (obs) {
+        linhas.push(`Observações: ${obs}`);
+      }
+      return linhas.join("\n");
+    }
+
+    function updateActions(message) {
+      if (!message || message.trim().length === 0 || message.trim() === "PEDIDO DE PEÇAS") {
+        sendActions.style.display = "none";
+        return;
+      }
+      const encodedMsg = encodeURIComponent(message);
+      // Número sanitizado para wa.me (ajuste se necessário)
+      const whatsappNumber = "5511978777597";
+      whatsBtn.href = `https://wa.me/${whatsappNumber}?text=${encodedMsg}`;
+      mailBtn.href = `mailto:diogo.lima@quallit.com.br,henrique.ferreira@quallit.com.br?subject=Pedido%20de%20Pe%C3%A7as&body=${encodedMsg}`;
+      sendActions.style.display = "flex";
+    }
+
+    generateBtn.addEventListener("click", () => {
+      const message = buildMessage();
+      output.value = message;
+      updateActions(message);
+    });
+
+    renderPecas();
+  </script>
+</body>
+</html>
+
