@@ -96,6 +96,26 @@
       align-items: center;
       margin-top: 10px;
     }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 10px 0 6px;
+      align-items: center;
+    }
+    .search-input {
+      flex: 1 1 240px;
+      min-width: 220px;
+    }
+    .outlined {
+      background: transparent;
+      color: #1e1e2f;
+      border: 1px solid #d1d5db;
+    }
+    .outlined:hover {
+      background: #f3f4f6;
+      box-shadow: none;
+    }
     .preview {
       width: 100%;
       min-height: 160px;
@@ -164,6 +184,10 @@
     <section class="card">
       <div class="header">📦 Relatório de Estoque</div>
       <p class="info">Informe a quantidade disponível para cada peça e gere a mensagem para envio.</p>
+      <div class="toolbar">
+        <input type="text" id="search" class="search-input" placeholder="Filtrar peça pelo nome..." />
+        <button class="primary outlined" id="backBtn" type="button">⬅️ Voltar ao início</button>
+      </div>
       <div class="form-grid">
         <div>
           <label for="cdSelect">CD / Estoque</label>
@@ -196,6 +220,18 @@
           <input type="text" id="outroNome" placeholder="Ex: João - Região ABC" />
         </div>
       </div>
+
+      <div class="form-grid" style="margin-top:6px;">
+        <div>
+          <label for="extraNome">Outra peça (nome)</label>
+          <input type="text" id="extraNome" placeholder="Digite o nome da peça" />
+        </div>
+        <div>
+          <label for="extraQtd">Qtd</label>
+          <input type="number" id="extraQtd" min="0" step="1" inputmode="numeric" placeholder="0" />
+        </div>
+      </div>
+
       <div class="pieces-grid" id="piecesContainer"></div>
       <button class="primary" id="generateBtn">Gerar mensagem</button>
     </section>
@@ -356,10 +392,15 @@
     const cdSelect = document.getElementById("cdSelect");
     const outroFields = document.getElementById("outroFields");
     const outroNome = document.getElementById("outroNome");
+    const searchInput = document.getElementById("search");
+    const extraNome = document.getElementById("extraNome");
+    const extraQtd = document.getElementById("extraQtd");
+    const backBtn = document.getElementById("backBtn");
 
-    function renderPecas() {
+    function renderPecas(filtro = "") {
       container.innerHTML = "";
       pecas.forEach((item, index) => {
+        if (filtro && !item.nome.toLowerCase().includes(filtro)) return;
         const card = document.createElement("div");
         card.className = "piece";
         card.innerHTML = `
@@ -379,6 +420,15 @@
       const outro = cdSelect.value === "OUTRO";
       outroFields.style.display = outro ? "block" : "none";
       if (!outro) outroNome.value = "";
+    });
+
+    searchInput.addEventListener("input", () => {
+      const filtro = searchInput.value.trim().toLowerCase();
+      renderPecas(filtro);
+    });
+
+    backBtn.addEventListener("click", () => {
+      window.location.href = "index.html";
     });
 
     function cleanName(nome) {
@@ -413,6 +463,11 @@
           linhas.push(`• ${qtd}x ${nomeLimpo}`);
         }
       });
+      const extraQ = Number(extraQtd.value) || 0;
+      const extraName = extraNome.value.trim();
+      if (extraQ > 0 && extraName) {
+        linhas.push(`• ${extraQ}x ${extraName}`);
+      }
       return linhas.join("\n");
     }
 
